@@ -3,14 +3,18 @@
 Comic downloader and emailer.
 
 Downloads comics from multiple sources and sends them as an inline-image
-HTML email. If any comic fails to download, sends an error notification
-instead and exits without sending the comics email.
+HTML email. If any comic fails to download, an error notification is sent
+only when --send-errors is passed. Once the comics email has been sent
+successfully for a given day, subsequent runs that day are a no-op.
 
-Run via:  ./run.sh
+Run via:  ./run.sh [--send-errors]
 """
 
+import argparse
 import asyncio
 import sys
+from datetime import date
+from pathlib import Path
 
 from playwright.async_api import async_playwright
 
@@ -18,6 +22,11 @@ from comics.config import load_config, get_images_dir, get_cache_dir
 from comics.downloaders import DOWNLOADERS
 from comics.downloaders.gocomics import download_gocomic
 from comics.email_sender import send_comics_email, send_error_email
+
+
+def _success_marker_path(cache_dir: Path) -> Path:
+    return cache_dir / f"{date.today().isoformat()}.sent"
+
 
 # Injected into every Playwright page to reduce bot-detection signals
 _STEALTH_SCRIPT = """
@@ -45,13 +54,18 @@ _STEALTH_SCRIPT = """
 """
 
 
-async def run() -> None:
+async def run(send_errors: bool) -> None:
     config = load_config()
     images_dir = get_images_dir(config)
     cache_dir = get_cache_dir(config)
 
     images_dir.mkdir(parents=True, exist_ok=True)
     cache_dir.mkdir(parents=True, exist_ok=True)
+
+    success_marker = _success_marker_path(cache_dir)
+    if success_marker.exists():
+        print(f"Comics already sent today ({date.today().isoformat()}); nothing to do.")
+        return
 
     comics = config["comics"]
     gocomics_entries = [c for c in comics if c["downloader"] == "gocomics"]
@@ -111,12 +125,27 @@ async def run() -> None:
         print(f"FAILED ({len(failures)} comic(s)):")
         for name, error in failures:
             print(f"  - {name}: {error}")
-        send_error_email(failures, config)
+        if send_errors:
+            send_error_email(failures, config)
+        else:
+            print("Not sending error email (pass --send-errors to enable).")
         sys.exit(1)
 
     print(f"All {len(results)} comics downloaded successfully.")
     send_comics_email(results, config)
+    success_marker.touch()
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--send-errors",
+        action="store_true",
+        help="Send an error notification email if any comic fails to download.",
+    )
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    args = _parse_args()
+    asyncio.run(run(send_errors=args.send_errors))
