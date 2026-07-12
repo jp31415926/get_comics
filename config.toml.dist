@@ -1,0 +1,143 @@
+[email]
+smtp_host = "localhost"
+smtp_port = 25
+from_addr = "from@example.com"
+to_addr = "to@example.com"
+errors_to = ["errors@example.com", "errors2@example.com"]
+
+[paths]
+images_dir = "images"
+cache_dir = "last_known_good_cache"
+
+# Comics are downloaded and emailed in the order listed here.
+#
+# downloader values:
+#   gocomics  - Playwright-based (for JavaScript-heavy gocomics.com pages)
+#   thefarside - requests+BS4 (special: 2 images + optional captions)
+#   arcamax   - requests+BS4 (BC, Bizarro, Jerry King, Fortune Teller)
+#   xkcd      - requests+BS4
+#   creators  - requests+BS4 (Wizard of Id)
+#
+# For gocomics entries, 'selector' is the CSS selector for the comic image.
+# If the site redesigns and the selector breaks, update it here — no code change needed.
+# The downloader also tries several fallback selectors automatically.
+
+[[comics]]
+id = "tfs"
+name = "The Far Side"
+downloader = "thefarside"
+url = "https://www.thefarside.com/"
+prefix = "tfs"
+extension = "jpg"
+max_images = 2
+
+[[comics]]
+id = "otm"
+name = "Off the Mark"
+downloader = "gocomics"
+url = "https://www.gocomics.com/offthemark"
+prefix = "otm"
+extension = "gif"
+selector = 'img[src*="featureassets.gocomics.com"]'
+
+[[comics]]
+id = "dh"
+name = "Daddy's Home"
+downloader = "gocomics"
+url = "https://www.gocomics.com/daddyshome"
+prefix = "dh"
+extension = "gif"
+selector = 'img[src*="featureassets.gocomics.com"]'
+
+[[comics]]
+id = "fm"
+name = "F Minus"
+downloader = "gocomics"
+url = "https://www.gocomics.com/fminus"
+prefix = "fm"
+extension = "gif"
+selector = 'img[src*="featureassets.gocomics.com"]'
+
+[[comics]]
+id = "xkcd"
+name = "xkcd"
+downloader = "xkcd"
+url = "https://xkcd.com/"
+prefix = "xkcd"
+extension = "png"
+
+[[comics]]
+id = "bc"
+name = "B.C."
+downloader = "arcamax"
+url = "https://www.arcamax.com/thefunnies/bc"
+prefix = "bc"
+extension = "gif"
+
+[[comics]]
+id = "wiz"
+name = "Wizard of Id"
+downloader = "creators"
+url = "https://www.creators.com/read/wizard-of-id"
+prefix = "wiz"
+extension = "jpg"
+
+[[comics]]
+id = "biz"
+name = "Bizarro"
+downloader = "arcamax"
+url = "https://www.arcamax.com/thefunnies/bizarro"
+prefix = "biz"
+extension = "gif"
+
+[[comics]]
+id = "tft"
+name = "The Fortune Teller"
+downloader = "arcamax"
+url = "https://www.arcamax.com/thefunnies/thefortuneteller"
+prefix = "tft"
+extension = "gif"
+
+[[comics]]
+id = "lp"
+name = "Loose Parts"
+downloader = "gocomics"
+url = "https://www.gocomics.com/looseparts"
+prefix = "lp"
+extension = "gif"
+selector = 'img[src*="featureassets.gocomics.com"]'
+
+[[comics]]
+id = "jkc"
+name = "Jerry King Cartoons"
+downloader = "arcamax"
+url = "https://www.arcamax.com/thefunnies/humorcartoon"
+prefix = "jkc"
+extension = "gif"
+
+[[comics]]
+id = "ch"
+name = "Calvin and Hobbes"
+downloader = "gocomics"
+url = "https://www.gocomics.com/calvinandhobbes"
+prefix = "ch"
+extension = "gif"
+selector = 'img[src*="featureassets.gocomics.com"]'
+
+[[comics]]
+id = "coh"
+name = "Close to Home"
+downloader = "gocomics"
+url = "https://www.gocomics.com/closetohome"
+prefix = "coh"
+extension = "gif"
+selector = 'img[src*="featureassets.gocomics.com"]'
+
+[[comics]]
+id = "dbd"
+name = "Day by Dave"
+downloader = "gocomics"
+url = "https://www.gocomics.com/day-by-dave"
+prefix = "dbd"
+extension = "gif"
+selector = 'img[src*="featureassets.gocomics.com"]'
